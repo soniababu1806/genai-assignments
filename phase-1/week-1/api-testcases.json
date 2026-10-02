@@ -1,0 +1,422 @@
+{
+  "summary": {
+    "total": 14
+  },
+  "testCases": [
+    {
+      "testCaseId": "TC-API-001",
+      "operationId": "addPet",
+      "endpoint": "/pet",
+      "method": "POST",
+      "category": "positive",
+      "title": "Add new pet with valid data",
+      "priority": "High",
+      "preconditions": [
+        "API service is running"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "pathParameters": {},
+      "queryParameters": {},
+      "requestBody": {
+        "id": 101,
+        "name": "doggie",
+        "photoUrls": [
+          "https://example.com/img.jpg"
+        ],
+        "status": "available"
+      },
+      "steps": [
+        "Send POST request to /pet with valid Pet schema.",
+        "Verify response status."
+      ],
+      "expectedStatusCode": 200,
+      "expectedResult": "Pet created successfully",
+      "sourceReferences": [
+        "paths./pet.post"
+      ]
+    },
+    {
+      "testCaseId": "TC-API-002",
+      "operationId": "findPetsByStatus",
+      "endpoint": "/pet/findByStatus",
+      "method": "GET",
+      "category": "positive",
+      "title": "Find pets by available status",
+      "priority": "High",
+      "preconditions": [
+        "Pet data exists"
+      ],
+      "headers": {},
+      "pathParameters": {},
+      "queryParameters": {
+        "status": [
+          "available"
+        ]
+      },
+      "steps": [
+        "Send GET request with status=available.",
+        "Check response array."
+      ],
+      "expectedStatusCode": 200,
+      "expectedResult": "Returns list of pets",
+      "sourceReferences": [
+        "paths./pet/findByStatus.get"
+      ]
+    },
+    {
+      "testCaseId": "TC-API-003",
+      "operationId": "addPet",
+      "endpoint": "/pet",
+      "method": "POST",
+      "category": "negative",
+      "title": "Add pet missing required name",
+      "priority": "Medium",
+      "preconditions": [
+        "API service is running"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "pathParameters": {},
+      "queryParameters": {},
+      "requestBody": {
+        "id": 102,
+        "photoUrls": [
+          "url"
+        ]
+      },
+      "steps": [
+        "Send POST with body missing name.",
+        "Validate rejection."
+      ],
+      "expectedStatusCode": 400,
+      "expectedResult": "Request rejected",
+      "sourceReferences": [
+        "paths./pet.post"
+      ]
+    },
+    {
+      "testCaseId": "TC-API-004",
+      "operationId": "getPetById",
+      "endpoint": "/pet/{petId}",
+      "method": "GET",
+      "category": "negative",
+      "title": "Find pet that does not exist",
+      "priority": "Medium",
+      "preconditions": [
+        "Pet 999 not exists"
+      ],
+      "headers": {},
+      "pathParameters": {
+        "petId": 9999
+      },
+      "queryParameters": {},
+      "steps": [
+        "GET /pet/{petId} with missing ID.",
+        "Check status code."
+      ],
+      "expectedStatusCode": 404,
+      "expectedResult": "Pet not found message",
+      "sourceReferences": [
+        "paths./pet/{petId}.get"
+      ]
+    },
+    {
+      "testCaseId": "TC-API-005",
+      "operationId": "getPetById",
+      "endpoint": "/pet/{petId}",
+      "method": "GET",
+      "category": "boundary",
+      "title": "Request with max int64 petId",
+      "priority": "Low",
+      "preconditions": [
+        "API service is running"
+      ],
+      "headers": {},
+      "pathParameters": {
+        "petId": 9223372036854776000
+      },
+      "queryParameters": {},
+      "steps": [
+        "GET /pet/{petId} with max int64 value.",
+        "Check response."
+      ],
+      "expectedStatusCode": 400,
+      "expectedResult": "Invalid ID supplied or 404",
+      "sourceReferences": [
+        "paths./pet/{petId}.get"
+      ]
+    },
+    {
+      "testCaseId": "TC-API-006",
+      "operationId": "updatePet",
+      "endpoint": "/pet",
+      "method": "PUT",
+      "category": "boundary",
+      "title": "Update pet with boundary enum status",
+      "priority": "Low",
+      "preconditions": [
+        "Pet exists"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "pathParameters": {},
+      "queryParameters": {},
+      "requestBody": {
+        "id": 103,
+        "name": "test",
+        "photoUrls": [
+          "url"
+        ],
+        "status": "sold"
+      },
+      "steps": [
+        "Send PUT with valid enum value.",
+        "Verify update."
+      ],
+      "expectedStatusCode": 200,
+      "expectedResult": "Pet status updated",
+      "sourceReferences": [
+        "paths./pet.put"
+      ]
+    },
+    {
+      "testCaseId": "TC-API-007",
+      "operationId": "getPetById",
+      "endpoint": "/pet/{petId}",
+      "method": "GET",
+      "category": "authentication",
+      "title": "Get pet without api_key header",
+      "priority": "High",
+      "preconditions": [
+        "Pet exists"
+      ],
+      "headers": {},
+      "pathParameters": {
+        "petId": 101
+      },
+      "queryParameters": {},
+      "steps": [
+        "GET request without api_key header.",
+        "Check status."
+      ],
+      "expectedStatusCode": 400,
+      "expectedResult": "Authentication failed",
+      "sourceReferences": [
+        "paths./pet/{petId}.get"
+      ]
+    },
+    {
+      "testCaseId": "TC-API-008",
+      "operationId": "addPet",
+      "endpoint": "/pet",
+      "method": "POST",
+      "category": "authorization",
+      "title": "Add pet without oauth scope",
+      "priority": "High",
+      "preconditions": [
+        "API service is running"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "pathParameters": {},
+      "queryParameters": {},
+      "requestBody": {
+        "name": "test",
+        "photoUrls": [
+          "url"
+        ]
+      },
+      "steps": [
+        "POST without valid petstore_auth token.",
+        "Check status."
+      ],
+      "expectedStatusCode": 401,
+      "expectedResult": "Unauthorized access",
+      "sourceReferences": [
+        "paths./pet.post"
+      ]
+    },
+    {
+      "testCaseId": "TC-API-009",
+      "operationId": "findPetsByStatus",
+      "endpoint": "/pet/findByStatus",
+      "method": "GET",
+      "category": "validation",
+      "title": "Query with invalid status value",
+      "priority": "High",
+      "preconditions": [
+        "API service is running"
+      ],
+      "headers": {},
+      "pathParameters": {},
+      "queryParameters": {
+        "status": [
+          "unknown"
+        ]
+      },
+      "steps": [
+        "GET with status=unknown.",
+        "Verify error response."
+      ],
+      "expectedStatusCode": 400,
+      "expectedResult": "Invalid status value",
+      "sourceReferences": [
+        "paths./pet/findByStatus.get"
+      ]
+    },
+    {
+      "testCaseId": "TC-API-010",
+      "operationId": "addPet",
+      "endpoint": "/pet",
+      "method": "POST",
+      "category": "validation",
+      "title": "Post pet with invalid status enum",
+      "priority": "High",
+      "preconditions": [
+        "API service is running"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "pathParameters": {},
+      "queryParameters": {},
+      "requestBody": {
+        "name": "test",
+        "photoUrls": [
+          "url"
+        ],
+        "status": "reserved"
+      },
+      "steps": [
+        "POST with status=reserved.",
+        "Verify status code."
+      ],
+      "expectedStatusCode": 400,
+      "expectedResult": "Validation exception",
+      "sourceReferences": [
+        "paths./pet.post"
+      ]
+    },
+    {
+      "testCaseId": "TC-API-011",
+      "operationId": "deletePet",
+      "endpoint": "/pet/{petId}",
+      "method": "DELETE",
+      "category": "error-handling",
+      "title": "Delete pet with invalid ID supplied",
+      "priority": "Medium",
+      "preconditions": [
+        "API service is running"
+      ],
+      "headers": {},
+      "pathParameters": {
+        "petId": 0
+      },
+      "queryParameters": {},
+      "steps": [
+        "DELETE with ID=0.",
+        "Check response."
+      ],
+      "expectedStatusCode": 400,
+      "expectedResult": "Invalid ID supplied",
+      "sourceReferences": [
+        "paths./pet/{petId}.delete"
+      ]
+    },
+    {
+      "testCaseId": "TC-API-012",
+      "operationId": "updatePet",
+      "endpoint": "/pet",
+      "method": "PUT",
+      "category": "error-handling",
+      "title": "Update pet causing validation exception",
+      "priority": "Medium",
+      "preconditions": [
+        "API service is running"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "pathParameters": {},
+      "queryParameters": {},
+      "requestBody": {
+        "id": 0,
+        "name": "test",
+        "photoUrls": []
+      },
+      "steps": [
+        "PUT with invalid ID.",
+        "Check response."
+      ],
+      "expectedStatusCode": 405,
+      "expectedResult": "Validation exception",
+      "sourceReferences": [
+        "paths./pet.put"
+      ]
+    },
+    {
+      "testCaseId": "TC-API-013",
+      "operationId": "updatePet",
+      "endpoint": "/pet",
+      "method": "PUT",
+      "category": "positive",
+      "title": "Update existing pet successfully",
+      "priority": "High",
+      "preconditions": [
+        "Pet exists"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "pathParameters": {},
+      "queryParameters": {},
+      "requestBody": {
+        "id": 101,
+        "name": "updated",
+        "photoUrls": [
+          "url"
+        ]
+      },
+      "steps": [
+        "PUT with valid body.",
+        "Verify update."
+      ],
+      "expectedStatusCode": 200,
+      "expectedResult": "Pet updated",
+      "sourceReferences": [
+        "paths./pet.put"
+      ]
+    },
+    {
+      "testCaseId": "TC-API-014",
+      "operationId": "deletePet",
+      "endpoint": "/pet/{petId}",
+      "method": "DELETE",
+      "category": "negative",
+      "title": "Delete pet not found",
+      "priority": "Medium",
+      "preconditions": [
+        "Pet 9999 not exists"
+      ],
+      "headers": {},
+      "pathParameters": {
+        "petId": 9999
+      },
+      "queryParameters": {},
+      "steps": [
+        "DELETE with missing petId.",
+        "Verify status."
+      ],
+      "expectedStatusCode": 404,
+      "expectedResult": "Pet not found",
+      "sourceReferences": [
+        "paths./pet/{petId}.delete"
+      ]
+    }
+  ]
+}
